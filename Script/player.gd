@@ -1,11 +1,24 @@
 extends CharacterBody2D
 
+@onready var A_E = $Attack/A_E
+@onready var A_D = $Attack/A_D
 
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
 
 
 func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed("M1"):
+		$Image.play("Attack")
+		await $Image.animation_finished
+		if $Image.flip_h == false:
+			A_D.disabled = false
+		else:
+			A_E.disabled = false
+		$Image.play("Idle")
+		A_D.disabled = true
+		A_E.disabled = true
+	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 

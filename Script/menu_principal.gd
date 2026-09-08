@@ -3,6 +3,7 @@ extends Control
 @onready var b_play = $VBoxContainer/Play
 @onready var b_opt = $VBoxContainer/Options
 @onready var b_exit = $VBoxContainer/Exit
+@onready var b_cre = $VBoxContainer/Credits
 
 var original_text = {}
 
@@ -10,10 +11,12 @@ func _ready() -> void:
 	config_sinal(b_play)
 	config_sinal(b_opt)
 	config_sinal(b_exit)
+	config_sinal(b_cre)
 	
 	original_text[b_play] = b_play.text
 	original_text[b_opt] = b_opt.text
 	original_text[b_exit] = b_exit.text
+	original_text[b_cre] = b_cre.text
 
 func config_sinal(bot: Button):
 	bot.focus_entered.connect(func(): add_set(bot))

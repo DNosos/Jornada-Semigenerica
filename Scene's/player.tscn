@@ -127,6 +127,12 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3mmgc"]
 size = Vector2(23, 49)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xjxrc"]
+size = Vector2(21, 42)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4mi2i"]
+size = Vector2(21, 42)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gdcqf"]
 size = Vector2(384, 20)
 
@@ -138,13 +144,31 @@ script = ExtResource("1_qv0m4")
 
 [node name="Image" type="AnimatedSprite2D" parent="CharacterBody2D" unique_id=248134720]
 sprite_frames = SubResource("SpriteFrames_3mmgc")
-animation = &"Idle"
+animation = &"Attack"
 autoplay = "Idle"
-frame_progress = 0.84887815
+frame = 3
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=763102050]
 position = Vector2(-1.5, 3.5)
 shape = SubResource("RectangleShape2D_3mmgc")
+
+[node name="Camera" type="Camera2D" parent="CharacterBody2D" unique_id=875334970]
+zoom = Vector2(2, 2)
+
+[node name="Attack" type="Area2D" parent="CharacterBody2D" unique_id=135077072]
+
+[node name="A_E" type="CollisionShape2D" parent="CharacterBody2D/Attack" unique_id=1955059038]
+position = Vector2(-23.5, 3)
+shape = SubResource("RectangleShape2D_xjxrc")
+disabled = true
+debug_color = Color(0.8627451, 0.33333334, 0.36078432, 0.41960785)
+
+[node name="A_D" type="CollisionShape2D" parent="CharacterBody2D/Attack" unique_id=81967793]
+position = Vector2(20.5, 3)
+shape = SubResource("RectangleShape2D_4mi2i")
+disabled = true
+debug_color = Color(0.8616625, 0.33506086, 0.36069852, 0.41960785)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1341962750]
 position = Vector2(553, 339)
