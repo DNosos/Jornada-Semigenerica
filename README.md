@@ -1,2 +1,2 @@
-# jornada-semigenérica
+# Jornada Semigenérica
 
