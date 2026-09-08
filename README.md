@@ -18,3 +18,7 @@ Para chegar ao castelo do Rei Demônio é necessário que o jogador passe por de
 ### Coletáveis
 Durante sua jornada o jogador pode encontrar poções para se curar durante a batalha; moedas para melhorar sua arma; e outros itens que irão ajudar o Herói a concluir seu objetivo.
 
+### Proposta
+Por fim, a ideia é criar um jogo onde o jogador passa por diferentes fases que se tornam mais difíceis conforme o progresso e, no fim o jogador vence derrotando o Rei Demônio e salvando a Princesa. Caso o Herói perca todas as suas vidas ele retornara do último checkpoint.
+
+*O jogo possui gráficos de pixel art.*
