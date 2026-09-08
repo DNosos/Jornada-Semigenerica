@@ -25,6 +25,9 @@ Durante sua jornada o jogador pode encontrar poções para se curar durante a ba
 ### Proposta
 Por fim, a ideia é criar um jogo onde o jogador passa por diferentes fases que se tornam mais difíceis conforme o progresso e, no fim o jogador vence derrotando o Rei Demônio e salvando a Princesa. Caso o Herói perca todas as suas vidas ele retornara do último checkpoint.
 
+### Referências:
+- Jornada Genérica
+
 *O jogo é um plataforma e possui gráficos de pixel art.*
 
 Participantes: Arthur "Cheatszz" Augusto, Emanuel "DNosos" Nepomuceno
