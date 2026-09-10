@@ -6,11 +6,14 @@ extends CharacterBody2D
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
 
+var canIdle = true
 
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("M1"):
 		$Image.play("Attack")
+		canIdle = false
 		await $Image.animation_finished
+		canIdle = true
 		if $Image.flip_h == false:
 			A_D.disabled = false
 		else:
@@ -27,6 +30,7 @@ func _physics_process(delta: float) -> void:
 
 	var direction := Input.get_axis("A", "D")
 	if direction:
+		$Image.play("Walk")
 		velocity.x = direction * SPEED
 		if direction < 0:
 			$Image.flip_h = true
@@ -34,6 +38,8 @@ func _physics_process(delta: float) -> void:
 			$Image.flip_h = false
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
+		if canIdle:
+			$Image.play("Idle")
 
 	move_and_slide()
 	
