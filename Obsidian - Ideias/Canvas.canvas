@@ -1,0 +1,17 @@
+{
+	"nodes":[
+		{"id":"90f81ca5a81a3edc","x":-463,"y":-173,"width":250,"height":60,"color":"1","type":"text","text":"Mapa do Tutorial"},
+		{"id":"8b1240de12a53691","x":-70,"y":-176,"width":250,"height":60,"color":"1","type":"text","text":"Player"},
+		{"id":"17210dec2934bd73","x":315,"y":-186,"width":250,"height":60,"color":"1","type":"text","text":"NPC"},
+		{"id":"df7f5ec327e82e93","x":790,"y":-188,"width":250,"height":60,"color":"1","type":"text","text":"Obstaculos"},
+		{"id":"e47beed4143367cb","x":1228,"y":-192,"width":250,"height":60,"color":"1","type":"text","text":"Outras Fases"},
+		{"id":"1dfb470ce3bc4c41","x":1657,"y":-190,"width":250,"height":60,"color":"1","type":"text","text":"Boss Final"}
+	],
+	"edges":[
+		{"id":"5308c66c31ce9b02","fromNode":"90f81ca5a81a3edc","fromSide":"right","toNode":"8b1240de12a53691","toSide":"left","color":"1"},
+		{"id":"255f55f2bbb8983b","fromNode":"8b1240de12a53691","fromSide":"right","toNode":"17210dec2934bd73","toSide":"left","color":"1"},
+		{"id":"a5e95782b8d14201","fromNode":"17210dec2934bd73","fromSide":"right","toNode":"df7f5ec327e82e93","toSide":"left","color":"1"},
+		{"id":"11c505ed698d0d51","fromNode":"df7f5ec327e82e93","fromSide":"right","toNode":"e47beed4143367cb","toSide":"left","color":"1"},
+		{"id":"7b2dee9e27bb28d8","fromNode":"e47beed4143367cb","fromSide":"right","toNode":"1dfb470ce3bc4c41","toSide":"left","color":"1"}
+	]
+}
