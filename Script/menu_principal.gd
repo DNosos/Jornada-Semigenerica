@@ -34,4 +34,4 @@ func exit():
 	get_tree().quit()
 
 func play():
-	get_tree().change_scene_to_file("res://Scene's/player.tscn")
+	get_tree().change_scene_to_file("res://Scene's/tutorial.tscn")
