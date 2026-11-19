@@ -47,3 +47,25 @@ func _physics_process(delta: float) -> void:
 
 		move_and_slide()
 	
+
+var npc = ""
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group("NPC"):
+		if Input.is_action_just_pressed("F"):
+			npc = body
+			if $CanvasLayer.visible == false:
+				$CanvasLayer.visible = true
+				$CanvasLayer/Panel/Name.text = body.name
+			else:
+				$CanvasLayer.visible = false
+				$CanvasLayer/Panel/Name.text = ""
+				$CanvasLayer/Panel/Text.text = ""
+
+
+func _on_area_2d_body_exited(body: Node2D) -> void:
+	if body.is_in_group("NPC"):
+		npc = body
+		$CanvasLayer.visible = false
+		$CanvasLayer/Panel/Name.text = ""
+		$CanvasLayer/Panel/Text.text = ""

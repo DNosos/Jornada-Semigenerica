@@ -1,13 +1,10 @@
 [gd_scene format=3 uid="uid://ber74v8288n2r"]
 
+[ext_resource type="PackedScene" uid="uid://btgjkcl4y8ko" path="res://Scene's/mestra.tscn" id="1_771fo"]
 [ext_resource type="PackedScene" uid="uid://bp6hgjdacdprc" path="res://Scene's/player.tscn" id="2_771fo"]
-[ext_resource type="Texture2D" uid="uid://dam771u2c8ie2" path="res://Image's/assets/A Menina.png" id="2_eu2xy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3mmgc"]
 size = Vector2(1152, 65)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gdcqf"]
-size = Vector2(73, 60)
 
 [node name="Node2D" type="Node2D" unique_id=1356116722]
 
@@ -29,20 +26,8 @@ color = Color(0.96562654, 0.72188586, 0.44238174, 1)
 position = Vector2(576, 640.5)
 shape = SubResource("RectangleShape2D_3mmgc")
 
-[node name="_ _ _" type="CharacterBody2D" parent="." unique_id=1976323248]
-position = Vector2(3, -304)
-scale = Vector2(1.5, 1.5)
-
-[node name="Sprite2D" type="Sprite2D" parent="_ _ _" unique_id=499198749]
-position = Vector2(34, 588)
-texture = ExtResource("2_eu2xy")
-
-[node name="Area2D" type="Area2D" parent="_ _ _" unique_id=687516089]
-position = Vector2(44, 577)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="_ _ _/Area2D" unique_id=873577919]
-position = Vector2(-9.5, 1)
-shape = SubResource("RectangleShape2D_gdcqf")
+[node name="mestra" parent="." unique_id=202590073 instance=ExtResource("1_771fo")]
+position = Vector2(46, 578)
 
 [node name="Player" parent="." unique_id=643869528 instance=ExtResource("2_771fo")]
 position = Vector2(-377, 155)
