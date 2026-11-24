@@ -10,6 +10,8 @@ const PORTAL_SCRIPT = preload("res://Script/portal.gd")
 const HUD_SCRIPT = preload("res://Script/hud.gd")
 const DIALOGUE_SCRIPT = preload("res://Script/dialogue_box.gd")
 
+const FX = preload("res://Script/fx.gd")
+
 const FLOOR_Y: float = 580.0
 
 var level_index: int = 0
@@ -23,6 +25,7 @@ var boss
 var boss_defeated: bool = false
 var mage_helped: bool = false
 var _ending_started: bool = false
+var _solids: Array = []
 
 func _ready() -> void:
 	level_index = clampi(GameState.current_level, 0, GameState.LAST_LEVEL)
@@ -83,7 +86,6 @@ func _create_background() -> void:
 	near_hills.z_index = -80
 	add_child(near_hills)
 
-	# Pequenas nuvens quadradas para manter a estética pixel art.
 	for cloud_x in range(150, int(world_width), 510):
 		var cloud := Polygon2D.new()
 		cloud.position = Vector2(cloud_x, 120 + (cloud_x % 3) * 18)
@@ -119,23 +121,25 @@ func _create_geometry() -> void:
 	for rect in platforms:
 		_make_platform(rect.position.x, rect.position.y, rect.size.x, rect.size.y, Color("#58484a"), Color("#a6a078"))
 
-	# Blocos decorativos nas laterais do chão.
 	for x in range(40, int(world_width), 280):
-		_make_decoration(x, 580.0)
+		var half_width: float = 46.0 if level_index == 2 else 28.0
+		if _on_floor_segment(float(x), half_width):
+			_make_decoration(x, FLOOR_Y)
 
 	match level_index:
 		0:
 			_spawn_spikes(960, 72)
 			_spawn_spikes(1660, 82)
 		1:
-			_spawn_spikes(580, 75)
+			_spawn_spikes(420, 75)
 			_spawn_spikes(1430, 80)
 			_spawn_spikes(2070, 80)
 		2:
-			_spawn_spikes(860, 80)
+			_spawn_spikes(700, 80)
 			_spawn_spikes(1745, 75)
 
 func _make_platform(x: float, top_y: float, width: float, height: float, base_color: Color, top_color: Color) -> void:
+	_solids.append(Rect2(x, top_y, width, height))
 	var body := StaticBody2D.new()
 	body.position = Vector2(x + width * 0.5, top_y + height * 0.5)
 	body.collision_layer = 1
@@ -171,13 +175,13 @@ func _make_decoration(x: float, y: float) -> void:
 	if level_index == 2:
 		atlas_texture.atlas = load("res://Image's/TileMaps/castle-02.png") as Texture2D
 		atlas_texture.region = Rect2(224, 224, 64, 64)
-		decoration.position = Vector2(x, y - 58)
 		decoration.scale = Vector2(1.45, 1.45)
+		decoration.position = Vector2(x, y - 64.0 * 1.45 * 0.5 + 4.0)
 	else:
 		atlas_texture.atlas = load("res://Image's/TileMaps/Florest - Tileset (2).png") as Texture2D
 		atlas_texture.region = Rect2(64, 128, 32, 64)
-		decoration.position = Vector2(x, y - 58)
 		decoration.scale = Vector2(1.7, 1.7)
+		decoration.position = Vector2(x, y - 64.0 * 1.7 * 0.5 + 4.0)
 	decoration.texture = atlas_texture
 	decoration.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	decoration.z_index = -1
@@ -188,7 +192,7 @@ func _spawn_spikes(x: float, width: float) -> void:
 	hazard.set_script(HAZARD_SCRIPT)
 	hazard.collision_layer = 0
 	hazard.collision_mask = 1
-	hazard.position = Vector2(x + width * 0.5, FLOOR_Y - 20)
+	hazard.position = Vector2(x + width * 0.5, FLOOR_Y - 8.0)
 	var teeth := Polygon2D.new()
 	var points := PackedVector2Array()
 	var tooth_count := int(width / 20.0)
@@ -204,13 +208,14 @@ func _spawn_spikes(x: float, width: float) -> void:
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(width, 18)
 	collision.shape = shape
+	collision.position = Vector2(0.0, -2.0)
 	hazard.add_child(collision)
 	add_child(hazard)
 
 func _create_player() -> void:
 	player = PLAYER_SCENE.instantiate() as CharacterBody2D
 	add_child(player)
-	var default_spawn := Vector2(115, 535)
+	var default_spawn := Vector2(115, FLOOR_Y - 29.0)
 	player.global_position = GameState.get_spawn_position(default_spawn)
 	player.interact_requested.connect(_on_interact_requested)
 	player.respawned.connect(func(): hud.notify("Você voltou ao último checkpoint."))
@@ -231,6 +236,23 @@ func _create_dialogue() -> void:
 	add_child(dialogue)
 	dialogue.dialogue_finished.connect(_on_dialogue_finished)
 
+func _surface_y(x: float, hint_y: float) -> float:
+	var best: float = INF
+	for rect in _solids:
+		var area: Rect2 = rect
+		if x >= area.position.x and x <= area.end.x and area.position.y >= hint_y - 20.0 and area.position.y < best:
+			best = area.position.y
+	if best == INF:
+		return FLOOR_Y
+	return best
+
+func _on_floor_segment(x: float, half_width: float) -> bool:
+	for rect in _solids:
+		var area: Rect2 = rect
+		if is_equal_approx(area.position.y, FLOOR_Y) and area.position.x <= x - half_width and x + half_width <= area.end.x:
+			return true
+	return false
+
 func _spawn_level_contents() -> void:
 	if level_index == 0:
 		_spawn_npc("master", "Mestra", "res://Image's/assets/A Menina.png", Vector2(245, 548), PackedStringArray([
@@ -241,9 +263,9 @@ func _spawn_level_contents() -> void:
 			"Cuidado com os monstros e com os espinhos. Encontre o checkpoint antes de seguir!"
 		]))
 		_spawn_npc("smith", "Ferreiro", "res://Image's/assets/O Ferreiro.png", Vector2(525, 548), PackedStringArray(["Bem-vindo à minha forja!"]))
-		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(900, 538), 3, 48.0, 95.0, 0.72)
-		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(1270, 538), 3, 58.0, 105.0, 0.72)
-		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(1775, 538), 3, 52.0, 100.0, 0.72)
+		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(900, 538), 3, 48.0, 95.0, 0.72, "sway")
+		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(1270, 538), 3, 58.0, 105.0, 0.72, "bob")
+		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(1775, 538), 3, 52.0, 100.0, 0.72, "sway")
 		_spawn_pickup("coin", Vector2(385, 440), 1, "res://Image's/assets/O Dinheiro.png")
 		_spawn_pickup("coin", Vector2(575, 370), 1, "res://Image's/assets/O Dinheiro.png")
 		_spawn_pickup("coin", Vector2(865, 440), 1, "res://Image's/assets/O Dinheiro.png")
@@ -257,10 +279,10 @@ func _spawn_level_contents() -> void:
 			"Não tente atravessar os espinhos correndo. Use as plataformas para alcançar lugares altos.",
 			"Posso compartilhar uma sopa restauradora com você. Volte a falar comigo caso precise de orientação."
 		]))
-		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(750, 538), 4, 64.0, 110.0, 0.78)
-		_spawn_enemy("res://Image's/assets/O Polvo.png", Vector2(1080, 535), 4, 54.0, 100.0, 0.70)
-		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(1620, 538), 4, 62.0, 115.0, 0.76)
-		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(2170, 538), 5, 68.0, 120.0, 0.8)
+		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(750, 538), 4, 64.0, 110.0, 0.78, "bob")
+		_spawn_enemy("res://Image's/assets/O Polvo.png", Vector2(1080, 535), 4, 54.0, 100.0, 0.70, "wave")
+		_spawn_enemy("res://Image's/assets/O Zumbi.png", Vector2(1620, 538), 4, 62.0, 115.0, 0.76, "sway")
+		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(2170, 538), 5, 68.0, 120.0, 0.8, "bob")
 		_spawn_pickup("coin", Vector2(285, 430), 2, "res://Image's/assets/O Dinheiro.png")
 		_spawn_pickup("coin", Vector2(485, 360), 2, "res://Image's/assets/O Dinheiro.png")
 		_spawn_pickup("potion", Vector2(930, 535), 2, "res://Image's/assets/A Sopa.png")
@@ -269,9 +291,9 @@ func _spawn_level_contents() -> void:
 		_spawn_checkpoint(1280)
 	else:
 		_spawn_npc("smith", "Ferreiro Real", "res://Image's/assets/O Ferreiro.png", Vector2(245, 548), PackedStringArray(["A última melhoria custa caro. Se tiver moedas suficientes, posso reforçar sua espada."]))
-		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(700, 538), 5, 68.0, 125.0, 0.82)
-		_spawn_enemy("res://Image's/assets/O Mago.png", Vector2(1190, 535), 5, 60.0, 105.0, 0.76)
-		_spawn_enemy("res://Image's/assets/O Polvo.png", Vector2(1530, 535), 5, 62.0, 110.0, 0.76)
+		_spawn_enemy("res://Image's/assets/Os Servos do Rei Demônio.png", Vector2(700, 538), 5, 68.0, 125.0, 0.82, "bob")
+		_spawn_enemy("res://Image's/assets/O Mago.png", Vector2(1190, 535), 5, 60.0, 105.0, 0.76, "bob")
+		_spawn_enemy("res://Image's/assets/O Polvo.png", Vector2(1530, 535), 5, 62.0, 110.0, 0.76, "wave")
 		_spawn_checkpoint(1300)
 		_spawn_pickup("coin", Vector2(380, 425), 3, "res://Image's/assets/O Dinheiro.png")
 		_spawn_pickup("potion", Vector2(1040, 535), 3, "res://Image's/assets/A Sopa.png")
@@ -292,25 +314,17 @@ func _spawn_npc(id: String, title: String, texture_path: String, at: Vector2, li
 	npc.configure(id, title, lines)
 	npc.collision_layer = 2
 	npc.collision_mask = 0
-	npc.position = at
+	npc.position = Vector2(at.x, _surface_y(at.x, at.y))
 	npc.add_to_group("NPC")
-	var sprite := Sprite2D.new()
-	sprite.texture = load(texture_path) as Texture2D
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	npc.add_child(sprite)
-	var collision := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(28, 38)
-	collision.shape = shape
-	npc.add_child(collision)
+	npc.setup_visual(FX.load_texture(texture_path), "bob", 1.6)
 	add_child(npc)
 	return npc
 
-func _spawn_enemy(texture_path: String, at: Vector2, hp: int, speed: float, patrol: float, size_scale: float) -> CharacterBody2D:
+func _spawn_enemy(texture_path: String, at: Vector2, hp: int, speed: float, patrol: float, size_scale: float, style: String = "bob") -> CharacterBody2D:
 	var enemy = CharacterBody2D.new()
 	enemy.set_script(ENEMY_SCRIPT)
-	enemy.position = at
-	enemy.configure(texture_path, hp, speed, patrol, size_scale, false)
+	enemy.position = Vector2(at.x, _surface_y(at.x, at.y) - 1.0)
+	enemy.configure(texture_path, hp, speed, patrol, size_scale, false, style)
 	add_child(enemy)
 	enemy.set_target(player as CharacterBody2D)
 	return enemy
@@ -318,8 +332,8 @@ func _spawn_enemy(texture_path: String, at: Vector2, hp: int, speed: float, patr
 func _spawn_boss() -> void:
 	boss = CharacterBody2D.new()
 	boss.set_script(ENEMY_SCRIPT)
-	boss.position = Vector2(2110, 532)
-	boss.configure("res://Image's/assets/A Morte.png", 16, 42.0, 20.0, 1.25, true)
+	boss.position = Vector2(2110, _surface_y(2110, 532) - 1.0)
+	boss.configure("res://Image's/assets/A Morte.png", 16, 42.0, 20.0, 1.25, true, "float")
 	boss.chase_range = 760.0
 	add_child(boss)
 	boss.set_target(player as CharacterBody2D)
@@ -331,25 +345,18 @@ func _spawn_pickup(kind: String, at: Vector2, amount: int, texture_path: String)
 	var pickup = Area2D.new()
 	pickup.set_script(PICKUP_SCRIPT)
 	pickup.configure(kind, amount)
-	pickup.position = at
+	pickup.position = Vector2(at.x, _surface_y(at.x, at.y))
 	pickup.collision_layer = 0
 	pickup.collision_mask = 1
-	var sprite := Sprite2D.new()
-	sprite.texture = load(texture_path) as Texture2D
-	sprite.scale = Vector2(0.75, 0.75)
-	pickup.add_child(sprite)
-	var collision := CollisionShape2D.new()
-	var shape := CircleShape2D.new()
-	shape.radius = 16.0
-	collision.shape = shape
-	pickup.add_child(collision)
+	pickup.setup_visual(FX.load_texture(texture_path), 0.75)
 	add_child(pickup)
 
 func _spawn_checkpoint(x: float) -> void:
+	var ground: float = _surface_y(x, 535.0)
 	var checkpoint = Area2D.new()
 	checkpoint.set_script(CHECKPOINT_SCRIPT)
-	checkpoint.position = Vector2(x, 535)
-	checkpoint.configure(level_index, Vector2(x, 535))
+	checkpoint.position = Vector2(x, ground - 36.0)
+	checkpoint.configure(level_index, Vector2(x, ground - 29.0))
 	checkpoint.collision_layer = 0
 	checkpoint.collision_mask = 1
 	var pole := Polygon2D.new()
@@ -367,11 +374,20 @@ func _spawn_checkpoint(x: float) -> void:
 	checkpoint.add_child(collision)
 	add_child(checkpoint)
 	checkpoint.activated.connect(func(): hud.notify("Checkpoint ativado! Você voltará daqui."))
+	checkpoint.activated.connect(func(): _celebrate_checkpoint(flag, checkpoint.global_position + Vector2(20.0, -30.0)))
+
+func _celebrate_checkpoint(flag: Polygon2D, at: Vector2) -> void:
+	flag.color = Color("#7bd36a")
+	var tween: Tween = flag.create_tween()
+	tween.tween_property(flag, "scale", Vector2(1.35, 1.35), 0.12)
+	tween.tween_property(flag, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	FX.burst(self, at, Color("#7bd36a"), 12, 140.0, 0.6, 3.0, 160.0)
+	FX.burst(self, at, Color("#f6ce78"), 8, 100.0, 0.5, 2.0, 100.0)
 
 func _spawn_portal() -> void:
 	var portal = Area2D.new()
 	portal.set_script(PORTAL_SCRIPT)
-	portal.position = Vector2(world_width - 105.0, 525)
+	portal.position = Vector2(world_width - 105.0, FLOOR_Y - 54.0)
 	portal.collision_layer = 0
 	portal.collision_mask = 1
 	var glow := Polygon2D.new()

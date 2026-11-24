@@ -1,6 +1,5 @@
 extends Node
 
-## Estado persistente da campanha. Este nó é um Autoload para sobreviver às trocas de fase.
 signal changed
 
 const LAST_LEVEL := 2

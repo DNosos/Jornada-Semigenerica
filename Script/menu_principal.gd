@@ -18,7 +18,7 @@ func options() -> void:
 	_show_info("Controles", "A / D  —  Andar\nW ou Espaço  —  Pular\nS  —  Descer\nBotão esquerdo do mouse  —  Atacar\nF  —  Conversar / interagir\nEsc  —  Fechar esta janela")
 
 func credits() -> void:
-	_show_info("Créditos", "Jornada Semigenérica\n\nDesenvolvimento: Arthur Augusto e Emanuel Nepomuceno\n\nObrigado por jogar!")
+	get_tree().change_scene_to_file("res://Scene's/creditos.tscn")
 
 func _show_info(title: String, message: String) -> void:
 	var dialog := AcceptDialog.new()

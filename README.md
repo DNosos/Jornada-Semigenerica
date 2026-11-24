@@ -36,7 +36,9 @@ Os diálogos são lineares: não há escolhas de respostas. Aproxime-se de um NP
 - Moedas, poções de cura e melhorias de espada compradas com o ferreiro.
 - NPCs com caixas de diálogo reutilizáveis e falas específicas por personagem.
 - Três regiões conectadas e chefe final com barra de vida.
-- Menu com opções de controles e créditos.
+- Menu com opções de controles e tela de créditos com rolagem (Scene's/creditos.tscn).
+- Feedback visual: partículas de impacto, números de dano, hit-stop, tremor de câmera, poeira de corrida/pouso, squash & stretch no pulo e coyote time / buffer de pulo.
+- Inimigos patrulham sem cair das plataformas (viram ao chegar à borda) e NPCs/inimigos têm animação de 2 frames gerada por código a partir dos sprites.
 
 ## Recursos
 

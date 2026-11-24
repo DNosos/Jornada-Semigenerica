@@ -109,6 +109,20 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_nrnbx")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_oxnod")
 text = "Opções"
 
+[node name="Credits" type="Button" parent="VBoxContainer" unique_id=773116918]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84705883, 0.5254902, 0.39215687, 1)
+theme_override_colors/font_focus_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
+theme_override_colors/font_hover_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("4_xhvfj")
+theme_override_styles/normal = SubResource("StyleBoxFlat_iqepy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_h1wq0")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dwrpx")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gd0jp")
+text = "Créditos"
+
 [node name="Exit" type="Button" parent="VBoxContainer" unique_id=1601952769]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.84705883, 0.5254902, 0.39215687, 1)
@@ -122,21 +136,6 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_h1wq0")
 theme_override_styles/hover = SubResource("StyleBoxFlat_dwrpx")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gd0jp")
 text = "Sair"
-
-[node name="Credits" type="Button" parent="VBoxContainer" unique_id=773116918]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.84705883, 0.5254902, 0.39215687, 1)
-theme_override_colors/font_focus_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
-theme_override_colors/font_hover_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
-theme_override_colors/font_hover_pressed_color = Color(0.9254902, 0.81960785, 0.6509804, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = ExtResource("4_xhvfj")
-theme_override_styles/normal = SubResource("StyleBoxFlat_iqepy")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_h1wq0")
-theme_override_styles/hover = SubResource("StyleBoxFlat_dwrpx")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gd0jp")
-text = "Créditos
-"
 
 [connection signal="focus_entered" from="VBoxContainer/Play" to="." method="add_set"]
 [connection signal="focus_exited" from="VBoxContainer/Play" to="." method="del_set"]
