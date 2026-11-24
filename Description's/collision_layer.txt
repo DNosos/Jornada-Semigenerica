@@ -1,10 +1,6 @@
-1 = attack/floor
-2 = interact
-3 = 
-4 =
-5 = 
-6 =
-7 =
-8 = 
-9 =
-10 =
+Camadas de colisão utilizadas:
+1 - Mundo e jogador (chão, plataformas e colisão física do Player)
+2 - NPCs (detectados pela área de interação do jogador)
+3 - Inimigos (máscara 4; recebem ataques e colidem com o jogador)
+
+Áreas de coleta, checkpoints, espinhos e portais usam camada 0 e máscara 1 para detectar o jogador.

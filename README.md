@@ -1,33 +1,52 @@
 # Jornada Semigenérica
 
-Equipe:
-- Arthur Augusto
-- Emanuel Nepomuceno
+**Plataforma 2D em pixel art**, desenvolvido por Arthur Augusto e Emanuel Nepomuceno.
 
-### História
-Como o próprio nome sugere, o jogo se baseia na história de um simples Herói que vai até o castelo do Rei Demônio para salvar a Princesa de um Reino.
+## História
 
-### Ações
-O jogador pode se mover, atacar e coletar itens utilizando das teclas do teclado e o mouse:
-- W ou Espaço: Pular
-- A: Andar para esquerda
-- S: Descer
-- D: Andar para direita
-- M1: Atacar
-- F: Interagir
+Um herói parte em direção ao castelo do Rei Demônio para resgatar a princesa. A jornada é dividida em três regiões, cada uma com inimigos e obstáculos mais difíceis.
 
-### Obstáculos
-Para chegar ao castelo do Rei Demônio é necessário que o jogador passe por desafios simples, como armadilhas e inimigos patrulheiros que irão perseguir o Herói caso ele chegue muito perto.
+## Como jogar
 
-### Coletáveis
-Durante sua jornada o jogador pode encontrar poções para se curar durante a batalha; moedas para melhorar sua arma; e outros itens que irão ajudar o Herói a concluir seu objetivo.
+| Ação | Controle |
+|---|---|
+| Andar para a esquerda | A |
+| Andar para a direita | D |
+| Pular | W ou Espaço |
+| Acelerar a descida | S |
+| Atacar | Botão esquerdo do mouse |
+| Conversar / interagir | F |
+| Avançar o diálogo | F ou Enter |
 
-### Proposta
-Por fim, a ideia é criar um jogo onde o jogador passa por diferentes fases que se tornam mais difíceis conforme o progresso e, no fim o jogador vence derrotando o Rei Demônio e salvando a Princesa. Caso o Herói perca todas as suas vidas ele retornara do último checkpoint.
+Os diálogos são lineares: não há escolhas de respostas. Aproxime-se de um NPC e pressione **F**.
 
-### Referências:
-- Jornada Genérica
+## Progressão
 
-*O jogo é um plataforma e possui gráficos de pixel art.*
+1. **Trilha da Floresta (tutorial):** conversa com a mestra, primeiro contato com o ferreiro, moedas, poções, zumbis, servos e espinhos.
+2. **Ruínas Esquecidas:** inimigos mais resistentes, polvo, mago viajante, plataformas e novo checkpoint.
+3. **Castelo do Rei Demônio:** última região, servos, mago, checkpoint e batalha contra o Rei Demônio. Após vencê-lo, converse com a princesa para concluir a campanha.
 
-Participantes: Arthur "Cheatszz" Augusto, Emanuel "DNosos" Nepomuceno
+## Sistemas implementados
+
+- Movimento, pulo, queda acelerada e câmera que acompanha o jogador.
+- Ataque corpo a corpo com hitbox direcional e dano aos inimigos.
+- Inimigos com patrulha, perseguição, vida e contato que causa dano.
+- Barra de vida, invulnerabilidade temporária após receber dano e retorno após perder toda a vida.
+- Checkpoints por região: ao ser derrotado, o herói retorna ao último ponto ativado.
+- Moedas, poções de cura e melhorias de espada compradas com o ferreiro.
+- NPCs com caixas de diálogo reutilizáveis e falas específicas por personagem.
+- Três regiões conectadas e chefe final com barra de vida.
+- Menu com opções de controles e créditos.
+
+## Recursos
+
+Os sprites dos personagens, inimigos e itens ficam em `Image's/assets/`. Os tilesets e referências visuais ficam em `Image's/TileMaps/`. O projeto usa os spritesheets existentes do jogador e as fontes que já estavam no repositório.
+
+## Executar
+
+Abra `project.godot` no **Godot 4.x** e execute o projeto (F6 para testar a cena atual ou F5 para iniciar pelo menu).
+
+## Créditos
+
+- Desenvolvimento: Arthur Augusto e Emanuel "DNosos" Nepomuceno.
+- Referência conceitual: *Jornada Genérica*.

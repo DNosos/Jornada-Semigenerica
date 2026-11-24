@@ -1,33 +1,6 @@
 [gd_scene format=3 uid="uid://ber74v8288n2r"]
 
-[ext_resource type="PackedScene" uid="uid://btgjkcl4y8ko" path="res://Scene's/mestra.tscn" id="1_771fo"]
-[ext_resource type="PackedScene" uid="uid://bp6hgjdacdprc" path="res://Scene's/player.tscn" id="2_771fo"]
+[ext_resource type="Script" path="res://Script/world.gd" id="1_world"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3mmgc"]
-size = Vector2(1152, 65)
-
-[node name="Node2D" type="Node2D" unique_id=1356116722]
-
-[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=229559915]
-
-[node name="ColorRect" type="ColorRect" parent="StaticBody2D" unique_id=208535335]
-offset_top = 608.0
-offset_right = 1152.0
-offset_bottom = 648.0
-color = Color(0.6545998, 0.90116763, 0.6976602, 1)
-
-[node name="ColorRect2" type="ColorRect" parent="StaticBody2D" unique_id=1160119997]
-offset_top = 633.0
-offset_right = 1152.0
-offset_bottom = 673.0
-color = Color(0.96562654, 0.72188586, 0.44238174, 1)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1825298251]
-position = Vector2(576, 640.5)
-shape = SubResource("RectangleShape2D_3mmgc")
-
-[node name="mestra" parent="." unique_id=202590073 instance=ExtResource("1_771fo")]
-position = Vector2(46, 578)
-
-[node name="Player" parent="." unique_id=643869528 instance=ExtResource("2_771fo")]
-position = Vector2(-377, 155)
+[node name="World" type="Node2D"]
+script = ExtResource("1_world")
