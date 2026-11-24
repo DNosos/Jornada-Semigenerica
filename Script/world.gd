@@ -179,9 +179,12 @@ func _make_decoration(x: float, y: float) -> void:
 		decoration.position = Vector2(x, y - 64.0 * 1.45 * 0.5 + 4.0)
 	else:
 		atlas_texture.atlas = load("res://Image's/TileMaps/Florest - Tileset (2).png") as Texture2D
-		atlas_texture.region = Rect2(64, 128, 32, 64)
+		# Recorta somente a árvore superior: o recorte 32x64 anterior
+		# também pegava parte da copa da árvore seguinte no atlas.
+		atlas_texture.region = Rect2(64, 128, 32, 48)
 		decoration.scale = Vector2(1.7, 1.7)
-		decoration.position = Vector2(x, y - 64.0 * 1.7 * 0.5 + 4.0)
+		# Alinha a base visível do tronco com o chão (y).
+		decoration.position = Vector2(x, y - 48.0 * 1.7 * 0.5 + 1.7)
 	decoration.texture = atlas_texture
 	decoration.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	decoration.z_index = -1
@@ -193,22 +196,68 @@ func _spawn_spikes(x: float, width: float) -> void:
 	hazard.collision_layer = 0
 	hazard.collision_mask = 1
 	hazard.position = Vector2(x + width * 0.5, FLOOR_Y - 8.0)
-	var teeth := Polygon2D.new()
-	var points := PackedVector2Array()
+	# As armadilhas ficam acima da camada do terreno para nunca serem
+	# escondidas pelos blocos do chão.
+	hazard.z_index = 8
+
+	# Base escura que deixa claro onde começa a faixa perigosa.
+	var base := Polygon2D.new()
+	base.polygon = PackedVector2Array([
+		Vector2(-width * 0.5, 6.0),
+		Vector2(width * 0.5, 6.0),
+		Vector2(width * 0.5, 12.0),
+		Vector2(-width * 0.5, 12.0)
+	])
+	base.color = Color("#56363a")
+	base.z_index = 0
+	hazard.add_child(base)
+
+	# Desenha cada espinho separadamente, com contorno e brilho para
+	# permanecer legível mesmo sobre o chão escuro.
 	var tooth_count := int(width / 20.0)
 	for i in range(tooth_count):
-		var left := -width * 0.5 + i * 20.0
-		points.append(Vector2(left, 8))
-		points.append(Vector2(left + 10, -14))
-		points.append(Vector2(left + 20, 8))
-	teeth.polygon = points
-	teeth.color = Color("#d6c7b2")
-	hazard.add_child(teeth)
+		var left: float = -width * 0.5 + float(i) * 20.0
+		var triangle := PackedVector2Array([
+			Vector2(left, 8.0),
+			Vector2(left + 10.0, -23.0),
+			Vector2(left + 20.0, 8.0)
+		])
+		var spike := Polygon2D.new()
+		spike.polygon = triangle
+		spike.color = Color("#d8c9b5")
+		spike.z_index = 1
+		spike.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		hazard.add_child(spike)
+
+		var outline := Line2D.new()
+		outline.points = PackedVector2Array([
+			triangle[0], triangle[1], triangle[2], triangle[0]
+		])
+		outline.width = 2.0
+		outline.default_color = Color("#302b2d")
+		outline.z_index = 2
+		outline.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		hazard.add_child(outline)
+
+		var shine := Line2D.new()
+		shine.points = PackedVector2Array([
+			Vector2(left + 5.0, 3.0),
+			Vector2(left + 10.0, -17.0),
+			Vector2(left + 13.0, -7.0)
+		])
+		shine.width = 1.0
+		shine.default_color = Color("#fff0d2")
+		shine.z_index = 3
+		shine.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		hazard.add_child(shine)
+
+	# A colisão acompanha a altura dos espinhos, sem ampliar a armadilha
+	# para além da área que o jogador consegue ver.
 	var collision := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(width, 18)
+	shape.size = Vector2(maxf(width - 4.0, 8.0), 26.0)
 	collision.shape = shape
-	collision.position = Vector2(0.0, -2.0)
+	collision.position = Vector2(0.0, -7.0)
 	hazard.add_child(collision)
 	add_child(hazard)
 

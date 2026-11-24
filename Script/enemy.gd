@@ -61,7 +61,8 @@ func set_target(player: CharacterBody2D) -> void:
 	_origin_x = global_position.x
 
 func _physics_process(delta: float) -> void:
-	if _dead:
+	# A morte encerra imediatamente a lógica física e o contato do inimigo.
+	if _dead or health <= 0:
 		return
 	if not is_on_floor():
 		velocity.y += _gravity * delta
@@ -140,7 +141,9 @@ func _update_tint() -> void:
 		visual.set_tint(Color.WHITE)
 
 func _check_contact() -> void:
-	if not is_instance_valid(target) or _contact_cooldown > 0.0:
+	# A checagem de dano é manual (por distância), então precisa verificar
+	# o estado de morte independentemente das colisões do PhysicsServer.
+	if _dead or health <= 0 or not is_instance_valid(target) or _contact_cooldown > 0.0:
 		return
 	var center: Vector2 = global_position + Vector2(0.0, -body_height * 0.5)
 	var diff: Vector2 = target.global_position - center
@@ -150,7 +153,8 @@ func _check_contact() -> void:
 		_contact_cooldown = 0.9
 
 func take_hit(amount: int, from_x: float = NAN) -> void:
-	if health <= 0:
+	# Também ignora sinais de ataque que possam chegar atrasados no mesmo frame.
+	if _dead or health <= 0:
 		return
 	var damage: int = maxi(amount, 0)
 	health = maxi(0, health - damage)
@@ -177,16 +181,32 @@ func take_hit(amount: int, from_x: float = NAN) -> void:
 		_die(push)
 
 func _die(push: float) -> void:
+	if _dead:
+		return
 	_dead = true
+
+	# Desliga a lógica de jogo antes de iniciar a animação de morte.
+	# O sprite permanece na cena para que o efeito visual termine normalmente.
+	set_physics_process(false)
+	velocity = Vector2.ZERO
+	target = null
+	remove_from_group("enemies")
+
+	# Desativa camada, máscara e todas as formas de colisão do inimigo.
+	# set_deferred evita alterar o PhysicsServer durante uma consulta física.
+	set_deferred("collision_layer", 0)
+	set_deferred("collision_mask", 0)
+	for shape_node in find_children("*", "CollisionShape2D", true, false):
+		(shape_node as CollisionShape2D).set_deferred("disabled", true)
+	for polygon_node in find_children("*", "CollisionPolygon2D", true, false):
+		(polygon_node as CollisionPolygon2D).set_deferred("disabled", true)
+
 	var scene: Node = get_parent()
 	var center: Vector2 = global_position + Vector2(0.0, -body_height * 0.5)
 	if not is_boss:
 		GameState.add_coins(1)
 		FX.popup(scene, global_position + Vector2(0.0, -body_height - 18.0), "+1", Color("#ffd24a"))
 	died.emit(self)
-	remove_from_group("enemies")
-	set_deferred("collision_layer", 0)
-	_collision.set_deferred("disabled", true)
 	FX.burst(scene, center, visual.average_color.lightened(0.3), 18 if not is_boss else 40, 240.0, 0.6, 4.0, 640.0, Vector2(push, -0.6), 120.0)
 	FX.burst(scene, center, Color.WHITE, 8, 260.0, 0.3, 2.0, 100.0)
 	FX.shake_player(get_tree(), 7.0 if is_boss else 3.5)
