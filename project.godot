@@ -21,6 +21,7 @@ GameState="*res://Script/game_state.gd"
 
 [display]
 
+window/size/mode=3
 window/size/window_width_override=1152
 window/size/window_height_override=648
 window/stretch/mode="canvas_items"
